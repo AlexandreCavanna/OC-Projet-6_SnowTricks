@@ -1,0 +1,10 @@
+{
+    "lang": "fr-FR",
+    "name": "SnowTricks",
+    "short_name": "ST",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+    "start_url": "https://example.com/login",
+    "scope": "/app/",
+    "orientation": "landscape",
+    "display": "browser",
+}
