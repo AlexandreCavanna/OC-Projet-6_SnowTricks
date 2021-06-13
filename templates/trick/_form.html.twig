@@ -1,0 +1,20 @@
+{{ form_start(form) }}
+
+{{ form_row(form.name) }}
+
+{{ form_row(form.description) }}
+
+{{ form_row(form.coverImage) }}
+
+{{ form_row(form.label) }}
+
+{{ form_row(form.pictures) }}
+
+{{ form_row(form.videos, {'label': 'Video(s)'}) }}
+
+<div>
+    <button class="btn btn-success">{{ button_label|default('Save') }}</button>
+    <a class="d-inline-block btn btn-primary" href="{{ path('trick_index') }}">Revenir à la liste des figures</a>
+</div>
+
+{{ form_end(form) }}

@@ -1,0 +1,109 @@
+{% block _trick_videos_widget %}
+    {{ form_widget(form) }}
+    <input type="hidden" id="widgets-counter" value="0">
+    <button type="button" id="add-video" class="btn btn-dark">Ajouter une vidéo</button>
+{% endblock %}
+
+{% block _trick_pictures_widget %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+
+ {% block _trick_videos_entry_row %}
+     {{ form_widget(form) }}
+ {% endblock %}
+{% block _trick_pictures_entry_row %}
+    {{ form_widget(form) }}
+{% endblock %}
+
+
+ {% block _trick_coverImage_row %}
+     <div class="row align-items-end mb-3">
+         <div class="col-12 col-md-10 mb-3 mb-md-0">
+             {{ form_label(form) }}
+             {{ form_widget(form) }}
+         </div>
+         <div class="col-12 col-md-2">
+             {% if form.parent.vars.data.coverImage %}
+                <img src="{{ asset('uploads/') ~ form.parent.vars.data.coverImage }}" class="img-fluid" alt=""/>
+             {% endif %}
+         </div>
+     </div>
+ {% endblock %}
+
+ {% block _trick_pictures_row %}
+     <div class="form-group" id="block_{{ id }}">
+         <div class="row">
+             <div class="col-12">
+                 <div class="row">
+                     <div class="col-12 mb-3">
+                         {{ form_label(form) }}
+                         {{ form_widget(form) }}
+                     </div>
+                     {% for picture in form.parent.vars.data.pictures %}
+                     <div class="col-md-4 mb-3 position-relative">
+                         <img src="{{ asset('uploads/' ~ picture.name) }}" class="d-inline img-fluid" alt="">
+                         <a href="{{ path('picture_delete', {'id': picture.id}) }}" class="btn btn-danger position-absolute top-0" id="delete-picture">X</a>
+                     </div>
+                     {% endfor %}
+                 </div>
+             </div>
+         </div>
+     </div>
+     <div
+             class="modal fade"
+             id="exampleModal"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true"
+     >
+         <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                     <button
+                             type="button"
+                             class="close"
+                             data-dismiss="modal"
+                             aria-label="Close"
+                     >
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                 </div>
+                 <div class="modal-body">
+                     ...
+                 </div>
+                 <div class="modal-footer">
+                     <button
+                             type="button"
+                             class="btn btn-secondary"
+                             data-dismiss="modal"
+                     >
+                         Close
+                     </button>
+                     <button type="button" class="btn btn-primary">Save changes</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+ {% endblock %}
+
+
+ {% block _trick_videos_entry_widget %}
+     <div class="form-group" id="block_{{ id }}">
+         <div class="row">
+             <div class="col-10">
+                 <div class="row">
+                     <div class="col">
+                         {{ form_widget(form.link) }}
+                     </div>
+                 </div>
+             </div>
+             <div class="col-2 px-1 px-sm-2">
+                 <button type="button" data-action="delete" data-target="#block_{{ id }}" class="btn btn-danger">X
+                 </button>
+             </div>
+         </div>
+     </div>
+ {% endblock %}
