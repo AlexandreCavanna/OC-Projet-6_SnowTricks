@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Trick;
 use App\Repository\TrickRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,16 @@ class TrickController extends AbstractController
     {
         return $this->render('trick/index.html.twig', [
             'tricks' => $trickRepository->findAll(),
+        ]);
+    }
+
+    /**
+     * @Route("trick/{id}", name="trick_show", requirements={"id":"\d+"}, methods={"GET"})
+     */
+    public function show(Trick $trick): Response
+    {
+        return $this->render('trick/show.html.twig', [
+            'trick' => $trick,
         ]);
     }
 }
