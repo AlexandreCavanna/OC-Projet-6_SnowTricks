@@ -33,6 +33,11 @@ class Trick
      * @ORM\Column(type="string", length=255)
      */
     private $label;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $coverImage;
     
     /**
      * @ORM\OneToMany(targetEntity=Picture::class, mappedBy="tricks", orphanRemoval=true, cascade={"persist"})
@@ -81,6 +86,18 @@ class Trick
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    public function getCoverImage(): ?string
+    {
+        return $this->coverImage;
+    }
+
+    public function setCoverImage(string $coverImage): self
+    {
+        $this->coverImage = $coverImage;
 
         return $this;
     }
