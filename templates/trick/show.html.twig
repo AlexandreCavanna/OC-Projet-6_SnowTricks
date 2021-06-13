@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Trick : {{ trick.name }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <img src="{{ asset('uploads/') }}{{ trick.coverImage }}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">{{ trick.name }} | {{ trick.label }}</h5>
+                <p class="card-text">{{ trick.description }}</p>
+            </div>
+        </div>
+        <div id="carouselIndicators" class="carousel slide" data-bs-interval="false" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for picture in trick.pictures %}
+                <div class="carousel-item {%if loop.index == 1%}active{% endif %}">
+                    <img src="{{ asset('uploads/') }}{{ picture.name }}" class="d-block w-100" alt="...">
+                </div>
+                {% endfor %}
+
+                {% for video in trick.videos %}
+                <div class="carousel-item ratio ratio-16x9 {%if loop.index == 1 and trick.pictures is empty %}active{% endif %}">
+                    <iframe class="embed-responsive-item" src="{{ video.link }}?rel=0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+{% endblock %}
