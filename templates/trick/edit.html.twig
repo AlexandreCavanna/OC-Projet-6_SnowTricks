@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Trick : {{ trick.name }}{% endblock %}
+
+{% form_theme form 'trick/_collections.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Modifier la figure</h1>
+        {{ include('trick/_form.html.twig', {'button_label': 'Modifier la figure'}) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {{ encore_entry_script_tags('trick') }}
+    {{ encore_entry_script_tags('ajaxPictures') }}
+{% endblock %}

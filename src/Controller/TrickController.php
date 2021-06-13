@@ -9,6 +9,7 @@ use App\Repository\TrickRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -73,6 +74,46 @@ class TrickController extends AbstractController
         }
 
         return $this->render('trick/new.html.twig', [
+            'trick' => $trick,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("trick/{id}/edit", name="trick_edit", methods={"GET","POST"})
+     */
+    public function edit(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Trick $trick,
+        FileUploader $fileUploader
+    ): Response {
+        $coverImagePath = new File($this->getParameter('pictures_directory').'/'.$trick->getCoverImage());
+
+        $trick->setCoverImage(explode('/', $coverImagePath)[6]);
+
+        $form = $this->createForm(TrickType::class, $trick);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $pictureImageFile = $form->get('pictures')->getData();
+            if ($pictureImageFile) {
+                foreach ($pictureImageFile as $pic) {
+                    $pictureFileName = $fileUploader->upload($pic);
+                    $picture = new Picture();
+                    $picture->setName($pictureFileName);
+                    $trick->addPicture($picture);
+                    $entityManager->persist($picture);
+                }
+            }
+            $entityManager->flush();
+
+
+            return $this->redirectToRoute('trick_index');
+        }
+
+        return $this->render('trick/edit.html.twig', [
             'trick' => $trick,
             'form' => $form->createView(),
         ]);
