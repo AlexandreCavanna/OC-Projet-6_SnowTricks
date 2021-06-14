@@ -6,13 +6,17 @@ use App\Repository\TrickRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
  */
 class Trick
 {
+    public const LIMIT_PER_PAGE = 9;
+
     /**
+     * @Groups("trick")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -20,31 +24,37 @@ class Trick
     private $id;
 
     /**
+     * @Groups("trick")
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Groups("trick")
      * @ORM\Column(type="text")
      */
     private $description;
 
     /**
+     * @Groups("trick")
      * @ORM\Column(type="string", length=255)
      */
     private $label;
 
     /**
+     * @Groups("trick")
      * @ORM\Column(type="string", length=255)
      */
     private $coverImage;
     
     /**
+     * @Groups("trick")
      * @ORM\OneToMany(targetEntity=Picture::class, mappedBy="tricks", orphanRemoval=true, cascade={"persist"})
      */
     private $pictures;
 
     /**
+     * @Groups("trick")
      * @ORM\OneToMany(targetEntity=Video::class, mappedBy="trick", orphanRemoval=true, cascade={"persist"})
      */
     private $videos;

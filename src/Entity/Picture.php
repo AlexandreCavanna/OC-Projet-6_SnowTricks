@@ -23,6 +23,7 @@ class Picture
     private $name;
 
     /**
+     * TODO virer ton "s"
      * @ORM\ManyToOne(targetEntity=Trick::class, inversedBy="pictures")
      * @ORM\JoinColumn(nullable=false)
      */

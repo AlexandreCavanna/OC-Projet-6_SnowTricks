@@ -3,28 +3,21 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="row">
-            {% for trick in tricks %}
-                <div class="col-lg-4 mb-4">
-                    <div class="card">
-                        <img src="{{ asset('uploads/') }}{{ trick.coverImage }}" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="d-inline-block card-title">{{ trick.name }}
-                                <a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn p-0"><i class="bi bi-pen-fill"></i></a>
-                                {{ include('trick/_delete_form.html.twig') }}
-                            </h5>
-
-                            <p class="card-text text-truncate">{{ trick.description }}</p>
-                            <a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Voir la figure</a>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="alert alert-warning text-center" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Il n'y a pas encore de figure(s).
-                </div>
-            {% endfor %}
-        </div>
+<div class="container">
+    <div id="trick-container" class="row">
+    {{ include('partials/_load_more_tricks.html.twig') }}
     </div>
+    {% if tricks is not empty %}
+        <div class="row">
+            <div class="col text-center">
+                <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">Afficher plus</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {{ encore_entry_script_tags('ajaxPagination') }}
 {% endblock %}

@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class TrickController extends AbstractController
 {
@@ -22,8 +23,29 @@ class TrickController extends AbstractController
     public function index(TrickRepository $trickRepository): Response
     {
         return $this->render('trick/index.html.twig', [
-            'tricks' => $trickRepository->findAll(),
+            'tricks' => $trickRepository->loadTricks($this->getOffset(1), Trick::LIMIT_PER_PAGE),
+            'nextPage'  => 2
         ]);
+    }
+
+    /**
+     * @Route("/tricks/pagination", name="trick_pagination", methods={"GET"})
+     */
+    public function loadMoreTricks(Request $request, TrickRepository $trickRepository, Environment $twig): Response
+    {
+        $page = $request->query->get('page');
+        $tricks = $trickRepository->loadTricks($this->getOffset($page), Trick::LIMIT_PER_PAGE);
+
+        $view = $twig->render('partials/_load_more_tricks.html.twig', [
+            'tricks' => $tricks,
+            'nextPage'  => 2
+        ]);
+
+        return new Response(
+            json_encode(['html' => $view, 'pages' => $this->getPages($trickRepository)]),
+            200,
+            ['Content-Type' => 'application/json']
+        );
     }
 
     /**
@@ -57,9 +79,9 @@ class TrickController extends AbstractController
                 $trick->setCoverImage($coverImageFileName);
             }
 
-            $pictureImageFile = $form->get('pictures')->getData();
-            if ($pictureImageFile) {
-                foreach ($pictureImageFile as $pic) {
+            $pictureImageFiles = $form->get('pictures')->getData();
+            if ($pictureImageFiles) {
+                foreach ($pictureImageFiles as $pic) {
                     $pictureFileName = $fileUploader->upload($pic);
                     $picture = new Picture();
                     $picture->setName($pictureFileName);
@@ -130,5 +152,18 @@ class TrickController extends AbstractController
         }
 
         return $this->redirectToRoute('trick_index');
+    }
+
+    private function getOffset(int $page): int
+    {
+        return is_null($page) || (int) $page === 1 ? 0 : ((int) $page - 1) * Trick::LIMIT_PER_PAGE;
+    }
+
+    private function getPages(TrickRepository $trickRepository): int
+    {
+        $tricks = $trickRepository->findAll();
+        $total = count($tricks);
+
+        return ceil($total / Trick::LIMIT_PER_PAGE);
     }
 }
