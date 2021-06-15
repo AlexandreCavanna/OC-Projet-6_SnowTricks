@@ -1,4 +1,23 @@
-<form class="d-inline" method="post" action="{{ path('trick_delete', {'id': trick.id}) }}" onsubmit="return confirm('Est-vous sûr de vouloir supprimer cette figure ?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ trick.id) }}">
-    <button class="btn p-0"><i class="bi bi-trash-fill text-danger"></i></button>
-</form>
+<button class="btn p-0 mb-1"><i class="bi bi-trash-fill text-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ trick.id }}" data-bs-whatever="@mdo"></i></button>
+
+<div class="modal fade" id="exampleModal{{ trick.id }}" tabindex="-1" aria-labelledby="{{ trick.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="{{ trick.id }}">Supression du Trick : {{ trick.name }} </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette figure ?</p>
+            </div>
+            <div class="modal-footer">
+                <form class="d-inline" method="post" action="{{ path('trick_delete', {'id': trick.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ trick.id) }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+
