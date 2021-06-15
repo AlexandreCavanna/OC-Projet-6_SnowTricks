@@ -10,7 +10,10 @@
     {% if tricks is not empty %}
         <div class="row">
             <div class="col text-center">
-                <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">Afficher plus</a>
+                <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Afficher plus
+                </a>
             </div>
         </div>
     {% endif %}
