@@ -92,6 +92,12 @@ class TrickController extends AbstractController
 
             $entityManager->persist($trick);
             $entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                'La figure <strong>'.$trick->getName().'</strong> a été <strong>créé</strong> avec succès !'
+            );
+
             return $this->redirectToRoute('trick_index');
         }
 
@@ -131,6 +137,10 @@ class TrickController extends AbstractController
             }
             $entityManager->flush();
 
+            $this->addFlash(
+                'success',
+                'La figure <strong>'.$trick->getName().' </strong>a été <strong>modifié</strong> avec succès !'
+            );
 
             return $this->redirectToRoute('trick_index');
         }
@@ -150,6 +160,11 @@ class TrickController extends AbstractController
             $entityManager->remove($trick);
             $entityManager->flush();
         }
+
+        $this->addFlash(
+            'success',
+            'La figure <strong>'.$trick->getName().' </strong>a été <strong>supprimé</strong> avec succès !'
+        );
 
         return $this->redirectToRoute('trick_index');
     }
