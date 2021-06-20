@@ -9,6 +9,7 @@ use App\Repository\TrickRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,26 +70,12 @@ class TrickController extends AbstractController
         $trick = new Trick();
 
         $form = $this->createForm(TrickType::class, $trick);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $coverImageFile = $form->get('coverImage')->getData();
-            if ($coverImageFile) {
-                $coverImageFileName = $fileUploader->upload($coverImageFile);
-                $trick->setCoverImage($coverImageFileName);
-            }
-
-            $pictureImageFiles = $form->get('pictures')->getData();
-            if ($pictureImageFiles) {
-                foreach ($pictureImageFiles as $pic) {
-                    $pictureFileName = $fileUploader->upload($pic);
-                    $picture = new Picture();
-                    $picture->setName($pictureFileName);
-                    $trick->addPicture($picture);
-                    $entityManager->persist($picture);
-                }
-            }
+            $this->handleCoverImage($trick, $form, $fileUploader);
+            $this->addPictures($trick, $form, $fileUploader, $entityManager);
+            $this->addVideos($trick, $form, $entityManager);
 
             $entityManager->persist($trick);
             $entityManager->flush();
@@ -110,31 +97,19 @@ class TrickController extends AbstractController
     /**
      * @Route("trick/{id}/edit", name="trick_edit", methods={"GET","POST"})
      */
-    public function edit(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Trick $trick,
-        FileUploader $fileUploader
-    ): Response {
+    public function edit(Request $request, EntityManagerInterface $entityManager, Trick $trick, FileUploader $fileUploader): Response
+    {
         $coverImagePath = new File($this->getParameter('pictures_directory').'/'.$trick->getCoverImage());
 
-        $trick->setCoverImage(explode('/', $coverImagePath)[6]);
-
         $form = $this->createForm(TrickType::class, $trick);
-
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $pictureImageFile = $form->get('pictures')->getData();
-            if ($pictureImageFile) {
-                foreach ($pictureImageFile as $pic) {
-                    $pictureFileName = $fileUploader->upload($pic);
-                    $picture = new Picture();
-                    $picture->setName($pictureFileName);
-                    $trick->addPicture($picture);
-                    $entityManager->persist($picture);
-                }
-            }
+            $this->handleCoverImage($trick, $form, $fileUploader, $coverImagePath);
+            $this->addPictures($trick, $form, $fileUploader, $entityManager);
+            $this->addVideos($trick, $form, $entityManager);
+
             $entityManager->flush();
 
             $this->addFlash(
@@ -180,5 +155,69 @@ class TrickController extends AbstractController
         $total = count($tricks);
 
         return ceil($total / Trick::LIMIT_PER_PAGE);
+    }
+
+    /**
+     * @param \Symfony\Component\Form\FormInterface $form
+     * @param \App\Entity\Trick $trick
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     */
+    private function addVideos(Trick $trick, FormInterface $form, EntityManagerInterface $entityManager): void
+    {
+        $videos = $form->get('videos')->getData();
+
+        if ($videos) {
+            foreach ($videos as $vid) {
+                $url = parse_url($vid->getLink());
+                if (!checkdnsrr($url['host'])) {
+                    return;
+                }
+
+                if (str_contains($vid->getLink(), '.be')) {
+                    $vid->setLink(substr_replace($vid->getLink(), 'be.com/embed', 13, 3));
+                }
+
+                $vid->setTrick($trick);
+                $trick->addVideo($vid);
+                $entityManager->persist($vid);
+            }
+        }
+    }
+
+    /**
+     * @param \App\Entity\Trick $trick
+     * @param \Symfony\Component\Form\FormInterface $form
+     * @param \App\Service\FileUploader $fileUploader
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     */
+    private function addPictures(Trick $trick, FormInterface $form, FileUploader $fileUploader, EntityManagerInterface $entityManager): void
+    {
+        $pictureImageFile = $form->get('pictures')->getData();
+        if ($pictureImageFile) {
+            foreach ($pictureImageFile as $pic) {
+                $pictureFileName = $fileUploader->upload($pic);
+                $picture = new Picture();
+                $picture->setName($pictureFileName);
+                $trick->addPicture($picture);
+                $entityManager->persist($picture);
+            }
+        }
+    }
+
+    /**
+     * @param \App\Entity\Trick $trick
+     * @param \Symfony\Component\Form\FormInterface $form
+     * @param \App\Service\FileUploader $fileUploader
+     * @param null $coverImagePath
+     */
+    private function handleCoverImage(Trick $trick, FormInterface $form, FileUploader $fileUploader, $coverImagePath = null): void
+    {
+        $coverImageFile = $form->get('coverImage')->getData();
+        if ($coverImageFile) {
+            $coverImageFileName = $fileUploader->upload($coverImageFile);
+            $trick->setCoverImage($coverImageFileName);
+        } else {
+            $trick->setCoverImage(explode('/', $coverImagePath)[6]);
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Picture;
 use App\Entity\Trick;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -11,16 +10,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Composite;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Url;
 use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class TrickType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $trick = new Trick();
         $builder
-            ->add('name', TextType::class, ['label' => 'Nom'])
-            ->add('description', TextareaType::class)
+            ->add('name', TextType::class, ['label' => 'Nom', 'required' => false])
+            ->add('description', TextareaType::class, ['required' => false])
             ->add('label', ChoiceType::class, [
                 'label' => 'Groupe',
                 'choices' => [
@@ -35,7 +37,6 @@ class TrickType extends AbstractType
                 'attr' => ['placeholder' => 'Glisser déposer / cliquer sur une image'],
                 'data_class' => null,
                 'required' => false,
-                'mapped' => false,
             ])
             ->add('pictures', DropzoneType::class, [
                 'attr' => [
@@ -46,9 +47,25 @@ class TrickType extends AbstractType
                 'label' => 'Image(s)',
                 'required' => false,
                 'mapped' => false,
-                'multiple' => true
+                'multiple' => true,
+                'constraints' => [
+                    new All([
+                        'constraints' => [
+                            new File([
+                                'maxSize' => '1024k',
+                                'maxSizeMessage' => 'Le poids de l\'image ne doit pas dépasser 1 Mo.',
+                                'mimeTypesMessage' => 'Veuillez upload une image au format jpeg ou png.',
+                                'mimeTypes' => [
+                                    'image/jpeg',
+                                    'image/png'
+                                ]
+                            ]),
+                        ],
+                    ]),
+                ]
             ])
             ->add('videos', CollectionType::class, [
+                'label' => 'Video(s)',
                 'entry_type' => VideoType::class,
                 'allow_add' => true,
                 'allow_delete' => true,

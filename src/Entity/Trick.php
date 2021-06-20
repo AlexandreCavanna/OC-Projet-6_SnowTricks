@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
@@ -21,43 +22,63 @@ class Trick
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @Groups("trick")
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
+     * @Assert\Length(
+     *     max = 30,
+     *     maxMessage = "La description ne peut pas dépasser {{ limit }} caractères."
+     * )
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @Groups("trick")
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
+     * @Assert\Length(
+     *     min = 50,
+     *     max = 255,
+     *     minMessage = "La description ne peut pas faire moins de {{ limit }} caractères.",
+     *     maxMessage = "La description ne peut pas dépasser {{ limit }} caractères."
+     * )
      */
-    private $description;
+    private ?string $description;
 
     /**
      * @Groups("trick")
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
      */
-    private $label;
+    private ?string $label;
 
     /**
      * @Groups("trick")
      * @ORM\Column(type="string", length=255)
+     * @Assert\File(
+     *     maxSize = "1024k",
+     *     maxSizeMessage= "Le poids de l'image ne doit pas dépasser 1 Mo.",
+     *     mimeTypes = {"image/jpeg", "image/png"},
+     *     mimeTypesMessage = "Veuillez upload une image au format jpeg ou png."
+     * )
      */
-    private $coverImage;
-    
+    private ?string $coverImage = "";
+
     /**
      * @Groups("trick")
-     * @ORM\OneToMany(targetEntity=Picture::class, mappedBy="tricks", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Picture::class, mappedBy="trick", orphanRemoval=true, cascade={"persist"})
      */
-    private $pictures;
+    private Collection  $pictures;
 
     /**
      * @Groups("trick")
      * @ORM\OneToMany(targetEntity=Video::class, mappedBy="trick", orphanRemoval=true, cascade={"persist"})
+     * @Assert\Valid
      */
-    private $videos;
+    private Collection  $videos;
 
     public function __construct()
     {
@@ -75,7 +96,7 @@ class Trick
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -87,7 +108,7 @@ class Trick
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -99,7 +120,7 @@ class Trick
         return $this->label;
     }
 
-    public function setLabel(string $label): self
+    public function setLabel(?string $label): self
     {
         $this->label = $label;
 
@@ -111,7 +132,7 @@ class Trick
         return $this->coverImage;
     }
 
-    public function setCoverImage(string $coverImage): self
+    public function setCoverImage(?string $coverImage): self
     {
         $this->coverImage = $coverImage;
 
@@ -126,11 +147,11 @@ class Trick
         return $this->pictures;
     }
 
-    public function addPicture(Picture $picture): self
+    public function addPicture(?Picture $picture): self
     {
         if (!$this->pictures->contains($picture)) {
             $this->pictures[] = $picture;
-            $picture->setTricks($this);
+            $picture->setTrick($this);
         }
 
         return $this;
@@ -140,8 +161,8 @@ class Trick
     {
         if ($this->pictures->removeElement($picture)) {
             // set the owning side to null (unless already changed)
-            if ($picture->getTricks() === $this) {
-                $picture->setTricks(null);
+            if ($picture->getTrick() === $this) {
+                $picture->setTrick(null);
             }
         }
 
@@ -156,7 +177,7 @@ class Trick
         return $this->videos;
     }
 
-    public function addVideo(Video $video): self
+    public function addVideo(?Video $video): self
     {
         if (!$this->videos->contains($video)) {
             $this->videos[] = $video;

@@ -16,8 +16,9 @@ class VideoType extends AbstractType
             ->add('link', UrlType::class, [
                 'attr' => [
                     'placeholder' => 'URL de la vidéo',
-                    'class' => 'mb-3',
+                    'required' => false
                 ],
+                'default_protocol' => 'https'
             ])
         ;
     }
