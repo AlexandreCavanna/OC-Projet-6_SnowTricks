@@ -29,3 +29,7 @@ services:
     App\EntityListener\TrickListener:
         tags:
             - { name: doctrine.orm.entity_listener }
+
+    App\DataFixtures\TrickFixtures:
+        arguments:
+            $targetDirectory: '%pictures_directory%'

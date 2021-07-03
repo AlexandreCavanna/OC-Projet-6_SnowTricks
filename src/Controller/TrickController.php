@@ -113,7 +113,7 @@ class TrickController extends AbstractController
         FileUploader $fileUploader,
         TrickManager $trickManager
     ): Response {
-        $coverImagePath = new File($this->getParameter('pictures_directory').'/'.$trick->getCoverImage());
+        $coverImagePath = new File($this->getParameter('pictures_directory').'/coverImages/'.$trick->getCoverImage());
 
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request);

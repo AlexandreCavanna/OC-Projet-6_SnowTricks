@@ -25,7 +25,7 @@
          </div>
          <div class="col-12 col-md-2">
              {% if form.parent.vars.data.coverImage %}
-                <img src="{{ asset('uploads/') ~ form.parent.vars.data.coverImage }}" class="img-fluid" alt=""/>
+                <img src="{{ asset('uploads/coverImages/') ~ form.parent.vars.data.coverImage }}" class="img-fluid" alt=""/>
              {% endif %}
          </div>
          {{ form_errors(form) }}
@@ -44,7 +44,7 @@
                      </div>
                      {% for picture in form.parent.vars.data.pictures %}
                      <div class="col-md-4 mb-3 position-relative">
-                         <img src="{{ asset('uploads/' ~ picture.name) }}" class="d-inline img-fluid" alt="">
+                         <img src="{{ asset('uploads/pictures/' ~ picture.name) }}" class="d-inline img-fluid" alt="">
                          <a href="{{ path('picture_delete', {'id': picture.id}) }}" class="btn btn-danger position-absolute top-0" id="delete-picture"><i class="bi bi-x-lg"></i></a>
                      </div>
                      {% endfor %}
