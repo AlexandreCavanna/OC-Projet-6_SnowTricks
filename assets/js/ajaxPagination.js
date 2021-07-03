@@ -9,6 +9,20 @@ loadBtn.addEventListener('click', function onClickBtnDelete(event) {
     const url = this.href;
     const container = document.querySelector('#trick-container');
 
+   axios.interceptors.request.use(function (config) {
+        loadBtn.lastElementChild.classList.add('spinner-border', 'spinner-border-sm');
+        return config;
+    }, function (error) {
+        return Promise.reject(error);
+    });
+
+    axios.interceptors.response.use(function (config) {
+        loadBtn.lastElementChild.classList.remove('spinner-border', 'spinner-border-sm');
+        return config;
+    }, function (error) {
+        return Promise.reject(error);
+    });
+
     axios.get(url + `?page=${nextPage++}`).then(function (response) {
 
         container.insertAdjacentHTML('beforeend', response.data.html );
@@ -16,5 +30,7 @@ loadBtn.addEventListener('click', function onClickBtnDelete(event) {
         if (nextPage > response.data.pages) {
             loadBtn.style.display = "none";
         }
-    })
+    });
+
+
 })
