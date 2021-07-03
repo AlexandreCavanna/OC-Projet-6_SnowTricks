@@ -83,8 +83,8 @@ class TrickController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $trickManager->handleCoverImage($trick, $form, $fileUploader);
-            $trickManager->addPictures($trick, $form, $fileUploader, $entityManager);
-            $trickManager->addVideos($trick, $form, $entityManager);
+            $trickManager->addPictures($trick, $form, $fileUploader);
+            $trickManager->addVideos($trick, $form);
 
             $entityManager->persist($trick);
             $entityManager->flush();
@@ -121,8 +121,8 @@ class TrickController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $trickManager->handleCoverImage($trick, $form, $fileUploader, $coverImagePath);
-            $trickManager->addPictures($trick, $form, $fileUploader, $entityManager);
-            $trickManager->addVideos($trick, $form, $entityManager);
+            $trickManager->addPictures($trick, $form, $fileUploader);
+            $trickManager->addVideos($trick, $form);
 
             $entityManager->flush();
 
@@ -148,7 +148,7 @@ class TrickController extends AbstractController
         Trick $trick,
         EntityManagerInterface $entityManager
     ): Response {
-        if ($this->isCsrfTokenValid('delete'.$trick->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete', $request->request->get('_token'))) {
             $entityManager->remove($trick);
             $entityManager->flush();
         }

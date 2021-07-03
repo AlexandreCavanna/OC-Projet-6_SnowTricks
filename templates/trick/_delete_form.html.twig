@@ -12,7 +12,7 @@
             </div>
             <div class="modal-footer">
                 <form class="d-inline" method="post" action="{{ path('trick_delete', {'id': trick.id}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ trick.id) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
                     <button class="btn btn-danger">Supprimer</button>
                 </form>
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Annuler</button>

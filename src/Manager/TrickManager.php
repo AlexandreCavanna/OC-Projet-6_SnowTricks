@@ -11,12 +11,21 @@ use Symfony\Component\Form\FormInterface;
 
 class TrickManager
 {
+    private EntityManagerInterface $entityManager;
+
     /**
-     * @param \Symfony\Component\Form\FormInterface $form
-     * @param \App\Entity\Trick $trick
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     * @param EntityManagerInterface $entityManager
      */
-    public function addVideos(Trick $trick, FormInterface $form, EntityManagerInterface $entityManager): void
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param Trick $trick
+     */
+    public function addVideos(Trick $trick, FormInterface $form): void
     {
         $videos = $form->get('videos')->getData();
 
@@ -28,18 +37,17 @@ class TrickManager
 
                 $vid->setTrick($trick);
                 $trick->addVideo($vid);
-                $entityManager->persist($vid);
+                $this->entityManager->persist($vid);
             }
         }
     }
 
     /**
-     * @param \App\Entity\Trick $trick
-     * @param \Symfony\Component\Form\FormInterface $form
-     * @param \App\Service\FileUploader $fileUploader
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     * @param Trick $trick
+     * @param FormInterface $form
+     * @param FileUploader $fileUploader
      */
-    public function addPictures(Trick $trick, FormInterface $form, FileUploader $fileUploader, EntityManagerInterface $entityManager): void
+    public function addPictures(Trick $trick, FormInterface $form, FileUploader $fileUploader): void
     {
         $pictureImageFile = $form->get('pictures')->getData();
         if ($pictureImageFile) {
@@ -48,15 +56,15 @@ class TrickManager
                 $picture = new Picture();
                 $picture->setName($pictureFileName);
                 $trick->addPicture($picture);
-                $entityManager->persist($picture);
+                $this->entityManager->persist($picture);
             }
         }
     }
 
     /**
-     * @param \App\Entity\Trick $trick
-     * @param \Symfony\Component\Form\FormInterface $form
-     * @param \App\Service\FileUploader $fileUploader
+     * @param Trick $trick
+     * @param FormInterface $form
+     * @param FileUploader $fileUploader
      * @param null $coverImagePath
      */
     public function handleCoverImage(Trick $trick, FormInterface $form, FileUploader $fileUploader, $coverImagePath = null): void
