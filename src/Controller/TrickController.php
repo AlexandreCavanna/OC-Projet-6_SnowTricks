@@ -19,7 +19,7 @@ use Twig\Environment;
 class TrickController extends AbstractController
 {
     /**
-     * @Route("/", name="trick_index", methods={"GET"})-
+     * @Route("/", name="trick_index", methods={"GET"})
      */
     public function index(TrickRepository $trickRepository, Pagination $pagination): Response
     {
@@ -72,33 +72,22 @@ class TrickController extends AbstractController
      */
     public function new(
         Request $request,
-        EntityManagerInterface $entityManager,
-        FileUploader $fileUploader,
         TrickManager $trickManager
     ): Response {
-        $trick = new Trick();
-
-        $form = $this->createForm(TrickType::class, $trick);
+        $form = $this->createForm(TrickType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $trickManager->handleCoverImage($trick, $form, $fileUploader);
-            $trickManager->addPictures($trick, $form, $fileUploader);
-            $trickManager->addVideos($trick, $form);
-
-            $entityManager->persist($trick);
-            $entityManager->flush();
-
+            $trickManager->create($form->getData(), $form);
             $this->addFlash(
                 'success',
-                'La figure <strong>'.$trick->getName().'</strong> a été <strong>créé</strong> avec succès !'
+                'La figure <strong>'.$form->getData()->getName().'</strong> a été <strong>créé</strong> avec succès !'
             );
 
             return $this->redirectToRoute('trick_index');
         }
 
         return $this->render('trick/new.html.twig', [
-            'trick' => $trick,
             'form' => $form->createView(),
         ]);
     }
@@ -108,9 +97,7 @@ class TrickController extends AbstractController
      */
     public function edit(
         Request $request,
-        EntityManagerInterface $entityManager,
         Trick $trick,
-        FileUploader $fileUploader,
         TrickManager $trickManager
     ): Response {
         $coverImagePath = new File($this->getParameter('pictures_directory').'/coverImages/'.$trick->getCoverImage());
@@ -120,11 +107,7 @@ class TrickController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $trickManager->handleCoverImage($trick, $form, $fileUploader, $coverImagePath);
-            $trickManager->addPictures($trick, $form, $fileUploader);
-            $trickManager->addVideos($trick, $form);
-
-            $entityManager->flush();
+            $trickManager->edit($form->getData(), $form, $coverImagePath);
 
             $this->addFlash(
                 'success',

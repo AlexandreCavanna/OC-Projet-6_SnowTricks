@@ -12,13 +12,19 @@ use Symfony\Component\Form\FormInterface;
 class TrickManager
 {
     private EntityManagerInterface $entityManager;
+    /**
+     * @var \App\Service\FileUploader
+     */
+    private FileUploader $fileUploader;
 
     /**
      * @param EntityManagerInterface $entityManager
+     * @param \App\Service\FileUploader $fileUploader
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, FileUploader $fileUploader)
     {
         $this->entityManager = $entityManager;
+        $this->fileUploader = $fileUploader;
     }
 
     /**
@@ -45,14 +51,13 @@ class TrickManager
     /**
      * @param Trick $trick
      * @param FormInterface $form
-     * @param FileUploader $fileUploader
      */
-    public function addPictures(Trick $trick, FormInterface $form, FileUploader $fileUploader): void
+    public function addPictures(Trick $trick, FormInterface $form): void
     {
         $pictureImageFile = $form->get('pictures')->getData();
         if ($pictureImageFile) {
             foreach ($pictureImageFile as $pic) {
-                $pictureFileName = $fileUploader->upload($pic);
+                $pictureFileName = $this->fileUploader->upload($pic);
                 $picture = new Picture();
                 $picture->setName($pictureFileName);
                 $trick->addPicture($picture);
@@ -64,17 +69,45 @@ class TrickManager
     /**
      * @param Trick $trick
      * @param FormInterface $form
-     * @param FileUploader $fileUploader
      * @param null $coverImagePath
      */
-    public function handleCoverImage(Trick $trick, FormInterface $form, FileUploader $fileUploader, $coverImagePath = null): void
+    public function handleCoverImage(Trick $trick, FormInterface $form, $coverImagePath = null): void
     {
         $coverImageFile = $form->get('coverImage')->getData();
         if ($coverImageFile) {
-            $coverImageFileName = $fileUploader->upload($coverImageFile);
+            $coverImageFileName = $this->fileUploader->upload($coverImageFile);
             $trick->setCoverImage($coverImageFileName);
         } else {
-            $trick->setCoverImage(explode('/', $coverImagePath)[6]);
+            $coverImagePathExplode = explode('/', $coverImagePath);
+            $trick->setCoverImage(end($coverImagePathExplode));
         }
+    }
+
+    /**
+     * @param Trick $trick
+     * @param FormInterface $form
+     */
+    public function create(Trick $trick, FormInterface $form): void
+    {
+        $this->handleCoverImage($trick, $form);
+        $this->addPictures($trick, $form);
+        $this->addVideos($trick, $form);
+
+        $this->entityManager->persist($trick);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param Trick $trick
+     * @param FormInterface $form
+     * @param string $coverImagePath
+     */
+    public function edit(Trick $trick, FormInterface $form, string $coverImagePath): void
+    {
+        $this->handleCoverImage($trick, $form, $coverImagePath);
+        $this->addPictures($trick, $form);
+        $this->addVideos($trick, $form);
+
+        $this->entityManager->flush();
     }
 }
