@@ -14,9 +14,19 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+                {% if app.user %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-box-arrow-in-right"></i> Inscription</a>
+                    <a class="nav-link" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
                 </li>
+                {% endif %}
+                {% if not app.user %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Connexion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('register') }}"><i class="bi bi-person-plus-fill"></i> Inscription</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>
