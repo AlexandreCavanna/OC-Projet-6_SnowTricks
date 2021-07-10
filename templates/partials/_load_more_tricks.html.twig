@@ -1,14 +1,13 @@
 {% for trick in tricks %}
-    <div class="col-lg-4 mb-4">
+    <div class="col-12 col-lg-4 mb-4">
         <div class="card">
             <img src="{{ 'trick-placeholder' in trick.coverImage ? asset('uploads/placeholder/') ~ trick.coverImage : asset('uploads/coverImages/') ~ trick.coverImage }}"
-                 class="card-img-top" alt="...">
+                 class="card-img-top img-fluid" alt="...">
             <div class="card-body">
-                <h5 class="d-inline-block card-title">{{ trick.name }}</h5>
+                <a href="{{ path('trick_show', {'id': trick.id}) }}" class="d-inline-block link-primary">{{ trick.name }}</a>
                 <a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn p-0 mb-1"><i class="bi bi-pen-fill"></i></a>
                 {{ include('trick/_delete_form.html.twig') }}
                 <p class="card-text text-truncate">{{ trick.description }}</p>
-                <a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Voir la figure</a>
             </div>
         </div>
     </div>

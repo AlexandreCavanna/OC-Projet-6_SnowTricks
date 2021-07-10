@@ -3,16 +3,34 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-<div class="container">
+    <div class="container-fluid home-background background mb-4">
+        <div class="row h-100 align-items-center">
+            <div class="col-12 text-center">
+                <h1 class="text text-white">Bienvenue sur SnowTricks !</h1>
+                <p class="h3 text-white">Le site de snowboarding de référence pour les Riders !</p>
+            </div>
+            <div class="col-12 text-end">
+                <a class="justify-content-end text-white btn-scroll" href="#trick-section"><i class="bi bi-arrow-down-circle-fill"></i></a>
+            </div>
+        </div>
+    </div>
+<div class="container" id="trick-section">
     <div id="container-pagination" class="row">
     {{ include('partials/_load_more_tricks.html.twig') }}
     </div>
-    <div class="row mb-4">
+    <div class="row mx-0 mb-4">
         <div class="col text-center">
             <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">
                 <span role="status" aria-hidden="true"></span>
                 Afficher plus
             </a>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-end">
+            <a class="justify-content-end text-dark btn-scroll" href="#trick-section"><i class="bi bi-arrow-up-circle-fill"></i></a>
         </div>
     </div>
 </div>
