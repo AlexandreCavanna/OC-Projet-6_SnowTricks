@@ -4,19 +4,24 @@
 namespace App\Service;
 
 use App\Entity\Trick;
-use App\Repository\TrickRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 class Pagination
 {
-    public function getOffset(int $page): int
+    public function getOffset(int $page, int $limit): int
     {
-        return is_null($page) || $page === 1 ? 0 : ($page - 1) * Trick::LIMIT_PER_PAGE;
+        return is_null($page) || $page === 1 ? 0 : ($page - 1) * $limit;
     }
 
-    public function getPages(TrickRepository $trickRepository): int
+    public function getPages(ServiceEntityRepository $serviceEntityRepository1, int $limit, Trick $trick = null): int
     {
-        $total = $trickRepository->count([]);
+        if (null !== $trick) {
+            $comments = $trick->getComments();
+            $total = $comments->count();
+        } else {
+            $total = $serviceEntityRepository1->count([]);
+        }
 
-        return ceil($total / Trick::LIMIT_PER_PAGE);
+        return ceil($total /  $limit);
     }
 }

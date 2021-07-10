@@ -16,8 +16,8 @@ class FileUploadedRemover
         $this->fileSystem = $fileSystem;
     }
 
-    public function removeUploadedFile(string $fileName): Void
+    public function removeUploadedFile(string $fileName, string $subDirectory = null): Void
     {
-        $this->fileSystem->remove($this->targetDirectory.'/'.$fileName);
+        $this->fileSystem->remove($this->targetDirectory.'/'.$subDirectory.$fileName);
     }
 }

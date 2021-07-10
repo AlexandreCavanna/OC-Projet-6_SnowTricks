@@ -1,7 +1,8 @@
 {% block _trick_videos_widget %}
     {{ form_widget(form) }}
     <input type="hidden" id="widgets-counter" value="0">
-    <button type="button" id="add-video" class="btn btn-dark"><i class="bi bi-plus-circle"></i>&ensp;Ajouter une vidéo</button>
+    <button type="button" id="add-video" class="btn btn-dark"><i class="bi bi-plus-circle"></i>&ensp;Ajouter une vidéo
+    </button>
 {% endblock %}
 
 {% block _trick_pictures_widget %}
@@ -18,15 +19,18 @@
 
 
  {% block _trick_coverImage_row %}
-     {% set coverImage = form.parent.vars.data.coverImage %}
+     {% if form.parent.vars.data.coverImage is defined %}
+         {% set coverImage = form.parent.vars.data.coverImage %}
+     {% endif %}
      <div class="row align-items-end mb-3">
-         <div class="col-12 col-md-{{ coverImage is defined and 'coverImage' in coverImage ? 10 : 12 }} mb-3 mb-md-0">
+         <div class="col-12 col-md-{{ coverImage is defined ? 10 : 12 }} mb-3 mb-md-0">
              {{ form_label(form) }}
              {{ form_widget(form) }}
          </div>
          <div class="col-12 col-md-2">
-             {% if coverImage is defined and 'coverImage' in coverImage %}
-                <img src="{{ asset('uploads/coverImages/') ~ coverImage }}" class="img-fluid" alt=""/>
+             {% if coverImage is defined %}
+                 <img src="{{ 'trick-placeholder' in coverImage ? asset('uploads/placeholder/') ~ coverImage : asset('uploads/coverImages/') ~ coverImage }}"
+                      class="img-fluid" alt=""/>
              {% endif %}
          </div>
          {{ form_errors(form) }}
@@ -44,12 +48,15 @@
                          {{ form_errors(form) }}
                      </div>
                      {% if form.parent.vars.data.pictures is defined %}
-                        {% for picture in form.parent.vars.data.pictures %}
-                        <div class="col-md-4 mb-3 position-relative">
-                            <img src="{{ asset('uploads/pictures/' ~ picture.name) }}" class="d-inline img-fluid" alt="">
-                            <a href="{{ path('picture_delete', {'id': picture.id}) }}" class="btn btn-danger position-absolute top-0" id="delete-picture"><i class="bi bi-x-lg"></i></a>
-                        </div>
-                        {% endfor %}
+                         {% for picture in form.parent.vars.data.pictures %}
+                             <div class="col-md-4 mb-3 position-relative">
+                                 <img src="{{ asset('uploads/pictures/' ~ picture.name) }}" class="d-inline img-fluid"
+                                      alt="">
+                                 <a href="{{ path('picture_delete', {'id': picture.id}) }}"
+                                    class="btn btn-danger position-absolute top-0" id="delete-picture"><i
+                                             class="bi bi-x-lg"></i></a>
+                             </div>
+                         {% endfor %}
                      {% endif %}
                  </div>
              </div>
@@ -73,7 +80,7 @@
                      <i class="bi bi-x-lg"></i>
                  </button>
              </div>
-            {{ form_errors(form.link) }}
+             {{ form_errors(form.link) }}
          </div>
      </div>
  {% endblock %}

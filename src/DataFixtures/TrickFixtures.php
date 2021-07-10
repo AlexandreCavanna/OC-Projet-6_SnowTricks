@@ -46,7 +46,8 @@ class TrickFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Faker\Factory::create();
-        $this->filesystem->remove($this->targetDirectory);
+        $this->filesystem->remove($this->targetDirectory.'/coverImages');
+        $this->filesystem->remove($this->targetDirectory.'/pictures');
         $group = ['Grabs', 'Rotations', 'Flips', 'Rotations désaxées', 'Slides'];
         $find1 = new Finder();
         $find1->in(__DIR__.'/coverImages')->name('/\.php|\.jpg|\.jpeg|\.png$/');
@@ -122,6 +123,7 @@ class TrickFixtures extends Fixture
                 $trick->addVideo($videos);
             }
             $manager->persist($trick);
+            $this->addReference(Trick::class.'_'.$i, $trick);
         }
         $manager->flush();
     }

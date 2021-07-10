@@ -1,0 +1,16 @@
+{% for comment in comments %}
+    {% set user = comment.user %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body py-3">
+            <div class="media">
+                <div class="media-body">
+                    <h5 class="mt-0">
+                        <span class="text-danger">{{ user.userIdentifier }}</span>
+                        <span class="small text-muted">le {{ comment.createdAt | date('d/m/Y') }} à {{ comment.createdAt | date('H:i') }}</span>
+                    </h5>
+                    {{ comment.content }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

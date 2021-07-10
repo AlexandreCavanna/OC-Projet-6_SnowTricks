@@ -7,7 +7,7 @@ loadBtn.addEventListener('click', function onClickBtnDelete(event) {
     event.preventDefault();
 
     const url = this.href;
-    const container = document.querySelector('#trick-container');
+    const container = document.querySelector('#container-pagination');
 
    axios.interceptors.request.use(function (config) {
         loadBtn.lastElementChild.classList.add('spinner-border', 'spinner-border-sm');
