@@ -9,11 +9,12 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
-use Symfony\Component\Validator\Constraints\Composite;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\Url;
 use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class TrickType extends AbstractType
@@ -72,6 +73,19 @@ class TrickType extends AbstractType
                 'required' => false,
             ])
         ;
+
+        $builder->get('coverImage')->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+            $coverImage = $event->getData();
+
+            if ($coverImage === null && $event->getForm()->getData() === null) {
+                $event->setData(
+                    new UploadedFile(
+                        '/home/alexandre/OC-Projet-6_SnowTricks/public/uploads/placeholder/trick-placeholder.jpg',
+                        'trick-placeholder.jpg'
+                    )
+                );
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver)

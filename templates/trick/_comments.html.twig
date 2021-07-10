@@ -1,0 +1,26 @@
+{% if app.user is empty %}
+    <div class="alert alert-info" role="alert">
+        <p>Connectez-vous ou inscrivez-vous pour laisser un commentaire !</p>
+        <a href="{{ path('app_login') }}">Connexion</a>
+        |
+        <a href="{{ path('register') }}">Inscription</a>
+    </div>
+{% else %}
+    <div class="card mb-4 shadow mt-4">
+        <h5 class="card-header">
+            <i class="bi bi-chat-left-text-fill"></i>
+            Laisser un commentaire
+        </h5>
+        <div class="card-body">
+            {{ form_start(form) }}
+
+            <div class="form-group">
+                {{ form_row(form.content) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Poster</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endif %}

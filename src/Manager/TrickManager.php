@@ -57,7 +57,7 @@ class TrickManager
         $pictureImageFile = $form->get('pictures')->getData();
         if ($pictureImageFile) {
             foreach ($pictureImageFile as $pic) {
-                $pictureFileName = $this->fileUploader->upload($pic);
+                $pictureFileName = $this->fileUploader->upload($pic, 'pictures');
                 $picture = new Picture();
                 $picture->setName($pictureFileName);
                 $trick->addPicture($picture);
@@ -75,7 +75,7 @@ class TrickManager
     {
         $coverImageFile = $form->get('coverImage')->getData();
         if ($coverImageFile) {
-            $coverImageFileName = $this->fileUploader->upload($coverImageFile);
+            $coverImageFileName = $this->fileUploader->upload($coverImageFile, 'coverImages');
             $trick->setCoverImage($coverImageFileName);
         } else {
             $coverImagePathExplode = explode('/', $coverImagePath);

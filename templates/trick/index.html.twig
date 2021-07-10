@@ -4,19 +4,17 @@
 
 {% block body %}
 <div class="container">
-    <div id="trick-container" class="row">
+    <div id="container-pagination" class="row">
     {{ include('partials/_load_more_tricks.html.twig') }}
     </div>
-    {% if tricks is not empty %}
-        <div class="row">
-            <div class="col text-center">
-                <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">
-                    <span role="status" aria-hidden="true"></span>
-                    Afficher plus
-                </a>
-            </div>
+    <div class="row mb-4">
+        <div class="col text-center">
+            <a class="btn btn-primary" id="load-more" data-next-page="{{ nextPage }}" href="{{ path('trick_pagination') }}">
+                <span role="status" aria-hidden="true"></span>
+                Afficher plus
+            </a>
         </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}
 
