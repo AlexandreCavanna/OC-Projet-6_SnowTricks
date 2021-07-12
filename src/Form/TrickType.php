@@ -19,6 +19,14 @@ use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class TrickType extends AbstractType
 {
+
+    private string $targetDirectory;
+
+    public function __construct(string $targetDirectory)
+    {
+        $this->targetDirectory = $targetDirectory;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -80,7 +88,7 @@ class TrickType extends AbstractType
             if ($coverImage === null && $event->getForm()->getData() === null) {
                 $event->setData(
                     new UploadedFile(
-                        '/home/alexandre/OC-Projet-6_SnowTricks/public/uploads/placeholder/trick-placeholder.jpg',
+                        $this->targetDirectory.'/placeholder/trick-placeholder.jpg',
                         'trick-placeholder.jpg'
                     )
                 );

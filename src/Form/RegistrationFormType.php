@@ -5,7 +5,9 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +20,13 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Entrer votre adresse email'
+                ],
+            ])
             ->add('username', TextType::class, [
                 'label' => 'Nom utilisateur',
                 'required' => false,
@@ -35,13 +44,26 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('plainPassword', PasswordType::class, [
+            ->add('plainPassword', RepeatedType::class, [
+                'first_options'  => [
+                    'label' => 'Mot de passe',
+                    'attr' => [
+                        'placeholder' => 'Entrer votre mot de passe'
+                    ]
+                ],
+                'second_options' => [
+                    'label' => 'Confirmer le mot de passe',
+                    'attr' => [
+                        'placeholder' => 'Confirmer votre mot de passe'
+                    ]
+                ],
+                'type' => PasswordType::class,
+                'invalid_message' => 'Les deux mots de passe doivent être identiques.',
                 'label' => 'Mot de passe',
                 'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'autocomplete' => 'new-password',
-                    'placeholder' => 'Entrer votre mot de passe'
                 ],
                 'constraints' => [
                     new NotBlank([

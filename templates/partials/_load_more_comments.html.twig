@@ -5,7 +5,7 @@
             <div class="media">
                 <div class="media-body">
                     <h5 class="mt-0">
-                        <span class="text-danger">{{ user.userIdentifier }}</span>
+                        <span class="text-danger">{{ user.username }}</span>
                         <span class="small text-muted">le {{ comment.createdAt | date('d/m/Y') }} à {{ comment.createdAt | date('H:i') }}</span>
                     </h5>
                     {{ comment.content }}

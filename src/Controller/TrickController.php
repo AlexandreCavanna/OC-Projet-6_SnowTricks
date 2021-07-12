@@ -10,7 +10,6 @@ use App\Manager\CommentManager;
 use App\Manager\TrickManager;
 use App\Repository\CommentRepository;
 use App\Repository\TrickRepository;
-use App\Service\FileUploadedRemover;
 use App\Service\Pagination;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class TrickController extends AbstractController
 {
@@ -124,12 +124,12 @@ class TrickController extends AbstractController
 
     /**
      * @Route("trick/{id}/edit", name="trick_edit", methods={"GET","POST"})
+     * @IsGranted("TRICK_EDIT", subject="trick")
      */
     public function edit(
         Request $request,
         Trick $trick,
-        TrickManager $trickManager,
-        FileUploadedRemover $fileUploadedRemover
+        TrickManager $trickManager
     ): Response {
         if ($trick->getCoverImage() === 'trick-placeholder.jpg') {
             $coverImagePath = new File($this->getParameter('pictures_directory').'/placeholder/'.$trick->getCoverImage());
@@ -141,7 +141,6 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //dd($trick->getCoverImage());
             $trickManager->edit($form->getData(), $form, $coverImagePath);
 
             $this->addFlash(
@@ -160,6 +159,7 @@ class TrickController extends AbstractController
 
     /**
      * @Route("trick/delete/{id}", name="trick_delete", methods={"POST"})
+     * @IsGranted("TRICK_DELETE", subject="trick")
      */
     public function delete(
         Request $request,
