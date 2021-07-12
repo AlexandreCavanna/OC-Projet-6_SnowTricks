@@ -7,6 +7,7 @@ use App\Entity\Trick;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Service\FileUploader;
+use App\Service\Slugger;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 use Symfony\Component\Filesystem\Filesystem;
@@ -19,25 +20,39 @@ class TrickFixtures extends BaseFixture
      * @var FileUploader
      */
     private FileUploader $fileUploader;
+
     /**
      * @var Filesystem
      */
     private Filesystem $filesystem;
+
     /**
      * @var string
      */
     private string $targetDirectory;
 
     /**
+     * @var Slugger
+     */
+    private Slugger $slugger;
+
+    /**
      * @param string $targetDirectory
      * @param FileUploader $fileUploader
      * @param Filesystem $filesystem
+     * @param Slugger $slugger
      */
-    public function __construct(string $targetDirectory, FileUploader $fileUploader, Filesystem $filesystem)
+    public function __construct(
+        string $targetDirectory,
+        FileUploader $fileUploader,
+        Filesystem $filesystem,
+        Slugger $slugger
+    )
     {
         $this->targetDirectory = $targetDirectory;
         $this->fileUploader = $fileUploader;
         $this->filesystem = $filesystem;
+        $this->slugger = $slugger;
     }
 
     /**
@@ -77,7 +92,10 @@ class TrickFixtures extends BaseFixture
             $keyCoverImages = array_rand($arrCoverImages);
 
             $trick = new Trick();
-            $trick->setName($faker->word());
+
+            $sentence = $faker->sentence(3);
+            $trick->setName($sentence);
+            $trick->setSlug($this->slugger->slugify($sentence));
             $trick->setDescription($faker->text());
             $trick->setLabel($group[$keyGroup]);
             $trick->setUser($this->getRandomReference(User::class));

@@ -37,6 +37,12 @@ class Trick
     private ?string $name;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
+     */
+    private ?string $slug;
+
+    /**
      * @Groups("trick")
      * @ORM\Column(type="text")
      * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
@@ -106,6 +112,18 @@ class Trick
     public function setName(?string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

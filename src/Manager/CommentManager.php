@@ -5,6 +5,7 @@ namespace App\Manager;
 
 use App\Entity\Comment;
 use App\Entity\Trick;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CommentManager
@@ -19,7 +20,7 @@ class CommentManager
         $this->entityManager = $entityManager;
     }
 
-    public function create(Trick $trick, $user, $form)
+    public function create(Trick $trick, User $user, $form)
     {
         $comment = new Comment();
         $comment->setContent($form->get('content')->getData());

@@ -10,13 +10,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class TrickVoter extends Voter
 {
+    private const TRICK_NEW = 'TRICK_NEW';
+
     private const TRICK_EDIT = 'TRICK_EDIT';
 
     private const TRICK_DELETE = 'TRICK_DELETE';
 
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::TRICK_EDIT, self::TRICK_DELETE])
+        return in_array($attribute, [self::TRICK_NEW, self::TRICK_EDIT, self::TRICK_DELETE])
             && $subject instanceof Trick || $subject === null;
     }
 
@@ -31,6 +33,8 @@ class TrickVoter extends Voter
         $trick = $subject;
 
         switch ($attribute) {
+            case self::TRICK_NEW:
+                return $this->canCreate();
             case self::TRICK_EDIT:
                 return $this->canEdit($trick, $user);
             case self::TRICK_DELETE:
@@ -43,6 +47,11 @@ class TrickVoter extends Voter
     private function canEdit(Trick $trick, User $user): bool
     {
         return $user === $trick->getUser();
+    }
+
+    private function canCreate(): bool
+    {
+        return true;
     }
 
     private function canDelete(Trick $trick, User $user): bool

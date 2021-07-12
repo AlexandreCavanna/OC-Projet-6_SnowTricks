@@ -26,7 +26,7 @@ class UserFixtures extends Fixture
         $faker = Faker\Factory::create();
         for ($i = 0; $i < 20; ++$i) {
             $user = new User();
-            $user->setRoles(['ROLE_USER', 'TRICK_EDIT', 'TRICK_EDIT']);
+            $user->setRoles(['ROLE_USER', 'TRICK_EDIT', 'TRICK_DELETE', 'TRICK_NEW']);
             $user->setEmail($faker->email);
             $user->setUsername($faker->userName);
             $user->setPassword($this->passwordHasher->hashPassword(

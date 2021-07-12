@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Trick;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -19,12 +20,17 @@ use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class TrickType extends AbstractType
 {
-
     private string $targetDirectory;
 
-    public function __construct(string $targetDirectory)
+    /**
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    private Filesystem $filesystem;
+
+    public function __construct(string $targetDirectory, Filesystem $filesystem)
     {
         $this->targetDirectory = $targetDirectory;
+        $this->filesystem = $filesystem;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -86,10 +92,18 @@ class TrickType extends AbstractType
             $coverImage = $event->getData();
 
             if ($coverImage === null && $event->getForm()->getData() === null) {
+                $this->filesystem->copy(
+                    $this->targetDirectory.'/placeholder/trick-placeholder.jpg',
+                    $this->targetDirectory.'/tmp.jpg'
+                );
+
                 $event->setData(
                     new UploadedFile(
-                        $this->targetDirectory.'/placeholder/trick-placeholder.jpg',
-                        'trick-placeholder.jpg'
+                        $this->targetDirectory.'/tmp.jpg',
+                        'trick-placeholder.jpg',
+                        null,
+                        null,
+                        true
                     )
                 );
             }

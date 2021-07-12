@@ -83,12 +83,19 @@ class TrickManager
         }
     }
 
+    public function addUser(Trick $trick, $user): Trick
+    {
+        return $trick->setUser($user);
+    }
+
     /**
      * @param Trick $trick
+     * @param $user
      * @param FormInterface $form
      */
-    public function create(Trick $trick, FormInterface $form): void
+    public function create(Trick $trick, $user, FormInterface $form): void
     {
+        $this->addUser($trick, $user);
         $this->handleCoverImage($trick, $form);
         $this->addPictures($trick, $form);
         $this->addVideos($trick, $form);

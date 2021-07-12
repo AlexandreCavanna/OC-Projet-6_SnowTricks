@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
 use App\Entity\Trick;
 use App\Form\CommentType;
 use App\Form\TrickType;
@@ -11,6 +10,7 @@ use App\Manager\TrickManager;
 use App\Repository\CommentRepository;
 use App\Repository\TrickRepository;
 use App\Service\Pagination;
+use App\Service\Slugger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
@@ -25,8 +25,21 @@ class TrickController extends AbstractController
     /**
      * @Route("/", name="trick_index", methods={"GET"})
      */
-    public function index(TrickRepository $trickRepository, Pagination $pagination): Response
+    public function index(TrickRepository $trickRepository, Pagination $pagination, Slugger $slugger): Response
     {
+        $tricks = $trickRepository->loadTricks(
+            $pagination->getOffset(
+                1,
+                Trick::LIMIT_PER_PAGE
+            ),
+            Trick::LIMIT_PER_PAGE
+        );
+
+        $slugs = [];
+        foreach ($tricks as $trick) {
+            $slugs[] = $slugger->slugify($trick->getDescription());
+        };
+
         return $this->render('trick/index.html.twig', [
             'tricks' => $trickRepository->loadTricks(
                 $pagination->getOffset(
@@ -35,7 +48,8 @@ class TrickController extends AbstractController
                 ),
                 Trick::LIMIT_PER_PAGE
             ),
-            'nextPage'  => 2
+            'nextPage'  => 2,
+            'slugs' => $slugs
         ]);
     }
 
@@ -47,7 +61,7 @@ class TrickController extends AbstractController
         TrickRepository $trickRepository,
         Environment $twig
     ): Response {
-        $pagination = new Pagination(Trick::class);
+        $pagination = new Pagination();
         return new Response(
             json_encode([
                 'html' => $twig->render(
@@ -65,61 +79,6 @@ class TrickController extends AbstractController
             200,
             ['Content-Type' => 'application/json']
         );
-    }
-
-    /**
-     * @Route("trick/{id}", name="trick_show", requirements={"id":"\d+"}, methods={"GET","POST"})
-     */
-    public function show(Trick $trick, Request $request, CommentManager $commentManager, CommentRepository $commentRepository, Comment $comment): Response
-    {
-        $user = $this->getUser();
-
-        $form = $this->createForm(CommentType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $commentManager->create($trick, $user, $form);
-
-            $this->addFlash(
-                'success',
-                'Le commentaire a été <strong>créé</strong> avec succès !'
-            );
-
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
-        }
-
-        return $this->render('trick/show.html.twig', [
-            'trick' => $trick,
-            'user' => $user,
-            'comments' => $commentRepository->findBy(['trick' => $trick->getId()], ['createdAt' => 'DESC'], 10),
-            'nextPage'  => 2,
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @Route("trick/new", name="trick_new", methods={"GET","POST"})
-     */
-    public function new(
-        Request $request,
-        TrickManager $trickManager
-    ): Response {
-        $form = $this->createForm(TrickType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $trickManager->create($form->getData(), $form);
-            $this->addFlash(
-                'success',
-                'La figure <strong>'.$form->getData()->getName().'</strong> a été <strong>créé</strong> avec succès !'
-            );
-
-            return $this->redirectToRoute('trick_index');
-        }
-
-        return $this->render('trick/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
     }
 
     /**
@@ -153,6 +112,63 @@ class TrickController extends AbstractController
 
         return $this->render('trick/edit.html.twig', [
             'trick' => $trick,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("trick/{id}/{slug}", name="trick_show", requirements={"id":"\d+"}, methods={"GET","POST"})
+     */
+    public function show(Trick $trick, Request $request, CommentManager $commentManager, CommentRepository $commentRepository, string $slug, Slugger $slugger): Response
+    {
+        $user = $this->getUser();
+
+        $form = $this->createForm(CommentType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $commentManager->create($trick, $user, $form);
+
+            $this->addFlash(
+                'success',
+                'Le commentaire a été <strong>créé</strong> avec succès !'
+            );
+
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+        }
+
+        return $this->render('trick/show.html.twig', [
+            'trick' => $trick,
+            'user' => $user,
+            'comments' => $commentRepository->findBy(['trick' => $trick->getId()], ['createdAt' => 'DESC'], 10),
+            'nextPage'  => 2,
+            'form' => $form->createView(),
+            'slug' => $slugger->slugify($slug)
+        ]);
+    }
+
+    /**
+     * @Route("trick/new", name="trick_new", methods={"GET","POST"})
+     * @IsGranted("TRICK_NEW")
+     */
+    public function new(
+        Request $request,
+        TrickManager $trickManager
+    ): Response {
+        $form = $this->createForm(TrickType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $trickManager->create($form->getData(), $this->getUser(), $form);
+            $this->addFlash(
+                'success',
+                'La figure <strong>'.$form->getData()->getName().'</strong> a été <strong>créé</strong> avec succès !'
+            );
+
+            return $this->redirectToRoute('trick_index');
+        }
+
+        return $this->render('trick/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }

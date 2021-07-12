@@ -4,7 +4,7 @@
             <img src="{{ 'trick-placeholder' in trick.coverImage ? asset('uploads/placeholder/') ~ trick.coverImage : asset('uploads/coverImages/') ~ trick.coverImage }}"
                  class="card-img-top img-fluid" alt="...">
             <div class="card-body">
-                <a href="{{ path('trick_show', {'id': trick.id}) }}" class="d-inline-block link-primary">{{ trick.name }}</a>
+                <a href="{{ path('trick_show', {'id': trick.id, 'slug': trick.slug}) }}" class="d-inline-block link-primary">{{ trick.name }}</a>
                 {% if app.user and app.user.id == trick.user.id %}
                 <a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn p-0 mb-1"><i class="bi bi-pen-fill"></i></a>
                 {{ include('trick/_delete_form.html.twig') }}
