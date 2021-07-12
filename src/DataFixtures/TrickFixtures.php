@@ -4,16 +4,16 @@ namespace App\DataFixtures;
 
 use App\Entity\Picture;
 use App\Entity\Trick;
+use App\Entity\User;
 use App\Entity\Video;
 use App\Service\FileUploader;
-use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class TrickFixtures extends Fixture
+class TrickFixtures extends BaseFixture
 {
     /**
      * @var FileUploader
@@ -42,8 +42,9 @@ class TrickFixtures extends Fixture
 
     /**
      * @param \Doctrine\Persistence\ObjectManager $manager
+     * @throws \Exception
      */
-    public function load(ObjectManager $manager)
+    protected function loadData(ObjectManager $manager)
     {
         $faker = Faker\Factory::create();
         $this->filesystem->remove($this->targetDirectory.'/coverImages');
@@ -79,18 +80,22 @@ class TrickFixtures extends Fixture
             $trick->setName($faker->word());
             $trick->setDescription($faker->text());
             $trick->setLabel($group[$keyGroup]);
-
-            $fileCoverImage = new UploadedFile(
-                __DIR__. '/coverImages/'.$arrCoverImages[$keyCoverImages],
-                $arrCoverImages[$keyCoverImages]
-            );
-
-            $filename = $this->fileUploader->upload($fileCoverImage);
+            $trick->setUser($this->getRandomReference(User::class));
 
             $this->filesystem->copy(
                 __DIR__.'/coverImages/'.$arrCoverImages[$keyCoverImages],
-                $this->targetDirectory. '/coverImages/'.$filename
+                __DIR__.'/coverImages/tmp.jpg'
             );
+            $fileCoverImage = new UploadedFile(
+                __DIR__.'/coverImages/tmp.jpg',
+                $arrCoverImages[$keyCoverImages],
+                null,
+                null,
+                true
+            );
+
+            $filename = $this->fileUploader->upload($fileCoverImage, '/coverImages');
+
 
             $trick->setCoverImage($filename);
 
@@ -98,17 +103,20 @@ class TrickFixtures extends Fixture
                 $keyPictures = array_rand($arrPictures);
                 $images = new Picture();
 
-                $filePicture = new UploadedFile(
-                    __DIR__. '/pictures/'.$arrPictures[$keyPictures],
-                    $arrPictures[$keyPictures]
-                );
-
-                $filename = $this->fileUploader->upload($filePicture);
-
                 $this->filesystem->copy(
                     __DIR__.'/pictures/'.$arrPictures[$keyPictures],
-                    $this->targetDirectory. '/pictures/'.$filename
+                    __DIR__.'/pictures/tmp.jpg'
                 );
+
+                $filePicture = new UploadedFile(
+                    __DIR__.'/pictures/tmp.jpg',
+                    $arrPictures[$keyPictures],
+                    null,
+                    null,
+                    true
+                );
+
+                $filename = $this->fileUploader->upload($filePicture, '/pictures');
 
                 $images->setName($filename);
                 $manager->persist($images);
