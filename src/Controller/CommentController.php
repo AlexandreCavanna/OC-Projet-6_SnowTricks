@@ -7,6 +7,8 @@ use App\Entity\Comment;
 use App\Entity\Trick;
 use App\Repository\CommentRepository;
 use App\Service\Pagination;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,5 +45,27 @@ class CommentController extends AbstractController
             200,
             ['Content-Type' => 'application/json']
         );
+    }
+
+    /**
+     * @Route("comment/delete/{id}", name="comment_delete", methods={"POST"})
+     * @IsGranted("COMMENT_DELETE", subject="comment")
+     */
+    public function delete(
+        Request $request,
+        Comment $comment,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($this->isCsrfTokenValid('delete', $request->request->get('_token'))) {
+            $entityManager->remove($comment);
+            $entityManager->flush();
+        }
+
+        $this->addFlash(
+            'success',
+            'Le commentaire a été <strong>supprimé</strong> avec succès !'
+        );
+
+        return $this->redirectToRoute('trick_index');
     }
 }

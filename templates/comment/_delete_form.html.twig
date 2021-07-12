@@ -1,0 +1,23 @@
+<button class="btn p-0 mb-1"><i class="bi bi-trash-fill text-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ comment.id }}" data-bs-whatever="@mdo"></i></button>
+
+<div class="modal fade" id="exampleModal{{ comment.id}}" tabindex="-1" aria-labelledby="{{ comment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="{{ comment.id }}">Supression du Commentaire</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce commentaire ?</p>
+            </div>
+            <div class="modal-footer">
+                <form class="d-inline" method="post" action="{{ path('comment_delete', {'id': comment.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+
