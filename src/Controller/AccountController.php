@@ -3,13 +3,23 @@
 
 namespace App\Controller;
 
+use App\Entity\Token;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Form\ResetPasswordType;
+use App\Form\SendEmailType;
+use App\Manager\TokenManager;
+use App\Repository\UserRepository;
+use App\Service\CheckTokenDate;
+use App\Service\Mailer;
+use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AccountController extends AbstractController
@@ -65,5 +75,86 @@ class AccountController extends AbstractController
     public function logout()
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
+    /**
+     * @Route("/reset-password/{token}", name="reset_password", methods={"GET","POST"})
+     * @Entity("token", options={"mapping": {"token": "token"}})
+     * @throws \Exception
+     */
+    public function resetPassword(
+        Request $request,
+        Token $token,
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordEncoder,
+        EntityManagerInterface $entityManager,
+        CheckTokenDate $checkTokenDate
+    ) {
+        $user = $userRepository->findOneBy(['token' => $token]);
+
+        if (is_null($user) || $checkTokenDate->checkTokenDate($user, '10 minutes ago') === false) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(ResetPasswordType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $passwordEncoder->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+            $user->setToken(null);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès, vous pouvez maintenant vous connecter avec vos nouveaux identifiants !');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('security/reset-password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/forgot-password", name="forgot_password", methods={"GET","POST"})
+     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     */
+    public function forgotPassword(
+        Request $request,
+        UserRepository $userRepository,
+        TokenGeneratorInterface $tokenGenerator,
+        Mailer $mailer,
+        TokenManager $tokenManager
+    ): Response {
+        $form = $this->createForm(SendEmailType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $userRepository->findOneBy(['email' => $form->get('email')->getData()]);
+
+            if (!is_null($user)) {
+                $tokenManager->create($user, $tokenGenerator);
+                $mailer->sendMail(
+                    $user->getEmail(),
+                    'contact@snowtricks.fr',
+                    'Mot de passe oublié.',
+                    'emails/forgot-password.html.twig',
+                    $user
+                );
+            } else {
+                $this->addFlash('error', 'Cette email n\'existe pas.');
+
+                return $this->redirectToRoute('forgot_password');
+            }
+        }
+        return $this->render('security/send-mail.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

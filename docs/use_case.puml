@@ -1,0 +1,33 @@
+@startuml
+left to right direction
+actor "Utilisateur authentifié" as login
+
+package Snowtricks {
+
+
+  usecase "Lire les tricks et tout les commentaires" as UC4
+
+  package "Gestion Trick" as GT {
+    usecase "gérer ses tricks" as UC1
+    (UC1) -right..> (créer trick) : include
+    (éditer son trick) -up.> (UC1) : extend
+    (supprimer son trick) -up.> (UC1) : extend
+  }
+
+  package "Gestion Commentaire" as GC  {
+    usecase "commenter tout les tricks" as UC3
+    usecase "gérer ses commentaires" as UC2
+    (UC2) -right.> (créer commentaire) : include
+    (éditer son commentaire) -up.> (UC2) : extend
+    (supprimer son commentaire) -up.> (UC2) : extend
+  }
+}
+
+Visiteur  --> UC4
+login --> UC1
+login --> UC2
+login --> UC3
+login --> UC4
+
+
+@enduml

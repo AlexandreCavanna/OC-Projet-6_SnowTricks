@@ -8,7 +8,7 @@
             <div class="col-8 align-self-center">
                 <form method="post">
                     {% if error %}
-                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        <div class="alert alert-danger">Mot de passe invalide.</div>
                     {% endif %}
 
                     <h1>Connexion</h1>
@@ -32,7 +32,7 @@
                         </label>
                     </div>
                     <a class="d-block mb-2" href="{{ path('register') }}">S'inscrire ?</a>
-                    <a class="d-block mb-4" href="{{ path('register') }}">Mot de passe oublié ?</a>
+                    <a class="d-block mb-4" href="{{ path('forgot_password') }}">Mot de passe oublié ?</a>
                     <button class="btn btn-lg btn-primary" type="submit">
                         Se connecter
                     </button>
@@ -40,4 +40,7 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('toast') }}
 {% endblock %}

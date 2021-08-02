@@ -28,7 +28,7 @@ class UserFixtures extends Fixture
             $user = new User();
             $user->setRoles(['ROLE_USER', 'TRICK_EDIT', 'TRICK_DELETE', 'TRICK_NEW']);
             $user->setEmail($faker->email);
-            $user->setUsername($faker->userName);
+            $user->setPseudo($faker->userName);
             $user->setPassword($this->passwordHasher->hashPassword(
                 $user,
                 'password'
