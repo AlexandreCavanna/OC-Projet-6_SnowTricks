@@ -6,13 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -24,9 +24,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private int $id;
 
     /**
+     * @ORM\OneToOne(targetEntity=Token::class, inversedBy="user", cascade={"persist", "remove"})
+     */
+    private ?Token $token;
+
+    /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\Email()
      * @Assert\NotBlank(message="Veuillez entrer une adresse email.")
+     * @Assert\Unique()
      */
     private string $email;
 
@@ -34,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank(message="Veuillez entrer un nom d'utilisateur.")
      */
-    private string $username;
+    private string $pseudo;
 
     /**
      * @ORM\Column(type="json")
@@ -58,6 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $tricks;
 
 
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -67,6 +74,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->email;
     }
 
     public function getEmail(): ?string
@@ -81,14 +93,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUsername(): string
+    public function getPseudo(): ?string
     {
-        return $this->username;
+        return $this->pseudo;
     }
 
-    public function setUsername(string $username): self
+    public function setPseudo(string $pseudo): self
     {
-        $this->username = $username;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
@@ -213,6 +225,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $trick->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getToken(): ?Token
+    {
+        return $this->token;
+    }
+
+    public function setToken(?Token $token): self
+    {
+        $this->token = $token;
 
         return $this;
     }

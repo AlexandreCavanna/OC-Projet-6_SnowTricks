@@ -22,3 +22,9 @@ services:
     App\EntityListener\TrickListener:
         tags:
             - { name: doctrine.orm.entity_listener }
+
+    App\EventListener\DatabaseSubscriber:
+        tags:
+            - name: 'doctrine.event_subscriber'
+              priority: 500
+              connection: 'default'

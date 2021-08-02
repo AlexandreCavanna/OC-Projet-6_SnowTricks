@@ -194,4 +194,11 @@ $breadcrumb-divider:                quote(">") !default;
   right: 12px;
   border-radius: 0;
 }
+.toast.toast-danger {
+  border-color: #f4bfc0;
+}
+.toast-header.toast-header-danger {
+  color: #83191c;
+  background-color: #f8d4d5;
+}
 
