@@ -134,7 +134,7 @@ class TrickController extends AbstractController
                 'Le commentaire a été <strong>créé</strong> avec succès !'
             );
 
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'slug' => $trick->getSlug()]);
         }
 
         return $this->render('trick/show.html.twig', [
