@@ -38,7 +38,6 @@ class Trick
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Cette valeur ne doit pas être vide.")
      */
     private ?string $slug;
 
@@ -90,7 +89,17 @@ class Trick
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tricks")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private ?User $user;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private ?\DateTimeInterface $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $modifyAt;
 
     public function __construct()
     {
@@ -262,6 +271,30 @@ class Trick
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getModifyAt(): ?\DateTimeInterface
+    {
+        return $this->modifyAt;
+    }
+
+    public function setModifyAt(?\DateTimeInterface $modifyAt): self
+    {
+        $this->modifyAt = $modifyAt;
 
         return $this;
     }

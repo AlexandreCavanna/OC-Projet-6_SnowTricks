@@ -6,6 +6,7 @@ namespace App\EntityListener;
 use App\Entity\Trick;
 use App\Service\FileUploadedRemover;
 use App\Service\Slugger;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\PostRemove;
 use Doctrine\ORM\Mapping\PrePersist;
 
@@ -25,6 +26,13 @@ class TrickListener
     public function prePersistHandler(Trick $trick)
     {
         $trick->setSlug($this->slugger->slugify($trick->getName()));
+    }
+
+    /** @ORM\PreUpdate() */
+    public function preUpdateHandler(Trick $trick)
+    {
+        $trick->setSlug($this->slugger->slugify($trick->getName()));
+        $trick->setModifyAt(new \DateTimeImmutable());
     }
 
     /** @PostRemove */
