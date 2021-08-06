@@ -10,9 +10,9 @@ class CheckTokenDate
     /**
      * @throws \Exception
      */
-    public function checkTokenDate(?User $user, string $timeDuration): bool
+    public function isTokenDateValid(User $user, string $timeDuration): bool
     {
-        if (!is_null($user)) {
+        if ($user) {
             $currentTime = new \DateTimeImmutable();
             $expireTime = new \DateTimeImmutable($timeDuration);
             $tokenTime = $user->getToken()->getDate();
@@ -21,6 +21,7 @@ class CheckTokenDate
                 return true;
             }
         }
+
         return false;
     }
 }

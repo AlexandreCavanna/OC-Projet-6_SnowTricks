@@ -4,21 +4,24 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Manager\UserManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $passwordHasher;
+    /**
+     * @var UserManager
+     */
+    private UserManager $userManager;
 
     /**
-     * @param UserPasswordHasherInterface $passwordHasher
+     * @param UserManager $userManager
      */
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    public function __construct(UserManager $userManager)
     {
-        $this->passwordHasher = $passwordHasher;
+        $this->userManager = $userManager;
     }
 
     public function load(ObjectManager $manager)
@@ -29,10 +32,7 @@ class UserFixtures extends Fixture
             $user->setRoles(['ROLE_USER', 'TRICK_EDIT', 'TRICK_DELETE', 'TRICK_NEW']);
             $user->setEmail($faker->email);
             $user->setPseudo($faker->userName);
-            $user->setPassword($this->passwordHasher->hashPassword(
-                $user,
-                'password'
-            ));
+            $this->userManager->updatePassword($user);
             $manager->persist($user);
             $this->addReference(User::class.'_'.$i, $user);
         }

@@ -9,6 +9,7 @@ use App\Form\RegistrationFormType;
 use App\Form\ResetPasswordType;
 use App\Form\SendEmailType;
 use App\Manager\TokenManager;
+use App\Manager\UserManager;
 use App\Repository\UserRepository;
 use App\Service\CheckTokenDate;
 use App\Service\Mailer;
@@ -27,19 +28,17 @@ class AccountController extends AbstractController
     /**
      * @Route("/register", name="register")
      */
-    public function register(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
-    {
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $passwordEncoder,
+        UserManager $userManager
+    ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $passwordEncoder->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+            $userManager->updatePassword($user, $form);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
@@ -84,29 +83,22 @@ class AccountController extends AbstractController
      */
     public function resetPassword(
         Request $request,
-        Token $token,
-        UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordEncoder,
         EntityManagerInterface $entityManager,
-        CheckTokenDate $checkTokenDate
+        CheckTokenDate $checkTokenDate,
+        UserManager $userManager,
+        Token $token
     ) {
-        $user = $userRepository->findOneBy(['token' => $token]);
+        $user =$token->getUser();
 
-        if (is_null($user) || $checkTokenDate->checkTokenDate($user, '10 minutes ago') === false) {
+        if (!$checkTokenDate->isTokenDateValid($user, '10 minutes ago')) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(ResetPasswordType::class);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $passwordEncoder->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            );
+            $userManager->updatePassword($user, $form);
             $user->setToken(null);
 
             $entityManager->flush();
@@ -138,15 +130,9 @@ class AccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $userRepository->findOneBy(['email' => $form->get('email')->getData()]);
 
-            if (!is_null($user)) {
+            if ($user) {
                 $tokenManager->create($user, $tokenGenerator);
-                $mailer->sendMail(
-                    $user->getEmail(),
-                    'contact@snowtricks.fr',
-                    'Mot de passe oublié.',
-                    'emails/forgot-password.html.twig',
-                    $user
-                );
+                $mailer->sendMail($user);
             } else {
                 $this->addFlash('error', 'Cette email n\'existe pas.');
 
