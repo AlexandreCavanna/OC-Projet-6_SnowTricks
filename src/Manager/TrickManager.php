@@ -6,25 +6,37 @@ namespace App\Manager;
 use App\Entity\Picture;
 use App\Entity\Trick;
 use App\Service\FileUploader;
+use App\Service\VideoExtractor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
 
 class TrickManager
 {
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     private EntityManagerInterface $entityManager;
+
     /**
      * @var \App\Service\FileUploader
      */
     private FileUploader $fileUploader;
 
     /**
+     * @var \App\Service\VideoExtractor
+     */
+    private VideoExtractor $videoExtractor;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param \App\Service\FileUploader $fileUploader
+     * @param \App\Service\VideoExtractor $videoExtractor
      */
-    public function __construct(EntityManagerInterface $entityManager, FileUploader $fileUploader)
+    public function __construct(EntityManagerInterface $entityManager, FileUploader $fileUploader, VideoExtractor $videoExtractor)
     {
         $this->entityManager = $entityManager;
         $this->fileUploader = $fileUploader;
+        $this->videoExtractor = $videoExtractor;
     }
 
     /**
@@ -37,14 +49,18 @@ class TrickManager
 
         if ($videos) {
             foreach ($videos as $vid) {
-                if (str_contains($vid->getLink(), '.be')) {
-                    $vid->setLink(substr_replace($vid->getLink(), 'be.com/embed', 13, 3));
-                }
+                $this->videoExtractor->extractVideo(
+                    $vid,
+                    '.be',
+                    'be.com/embed',
+                    13,
+                    3
+                );
 
                 $vid->setTrick($trick);
                 $trick->addVideo($vid);
-                $this->entityManager->persist($vid);
             }
+            $this->entityManager->persist($trick);
         }
     }
 

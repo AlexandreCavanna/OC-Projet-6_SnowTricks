@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\VideoRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Validator as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,7 +22,7 @@ class Video
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Supprimer l'URL ou remplisser le champ.")
-     * @Assert\Url()
+     * @CustomAssert\ContainsFormatYoutube()
      */
     private ?string $link;
 
