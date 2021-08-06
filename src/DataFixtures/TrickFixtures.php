@@ -99,6 +99,7 @@ class TrickFixtures extends BaseFixture
             $trick->setDescription($faker->text());
             $trick->setLabel($group[$keyGroup]);
             $trick->setUser($this->getRandomReference(User::class));
+            $trick->setCreatedAt($faker->dateTime);
 
             $this->filesystem->copy(
                 __DIR__.'/coverImages/'.$arrCoverImages[$keyCoverImages],
