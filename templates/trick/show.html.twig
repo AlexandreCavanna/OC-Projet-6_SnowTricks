@@ -4,40 +4,45 @@
 
 {% block body %}
     <div class="container mt-4">
-        <div class="card">
+        <div class="position-relative text-center">
             <img src="{{ 'trick-placeholder' in trick.coverImage ? asset('uploads/placeholder/') ~ trick.coverImage : asset('uploads/coverImages/') ~ trick.coverImage }}"
                  class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">{{ trick.name }} | {{ trick.label }}</h5>
-                <p class="card-text">{{ trick.description }}</p>
-            </div>
+            <div class="h1 text-secondary position-absolute top-50 start-50 translate-middle-x">{{ trick.name }}</div>
         </div>
-        <div id="carouselIndicators" class="carousel slide mb-4" data-bs-interval="false" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                {% for picture in trick.pictures %}
-                    <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-                        <img src="{{ asset('uploads/pictures/') }}{{ picture.name }}" class="d-block w-100" alt="...">
-                    </div>
-                {% endfor %}
+        <div class="d-flex justify-content-center mt-2 mb-2">
+            <button id="display-media" class="btn btn-primary btn-display">
+                Voir les médias
+            </button>
+        </div>
 
-                {% for video in trick.videos %}
-                    <div class="carousel-item ratio ratio-16x9 {% if loop.index == 1 and trick.pictures is empty %}active{% endif %}">
-                        <iframe class="embed-responsive-item" src="{{ video.link }}?rel=0" title="YouTube video player"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen></iframe>
-                    </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+        <section class="slider" id="slider">
+            {% for picture in trick.pictures %}
+                <img src="{{ asset('uploads/pictures/') }}{{ picture.name }}" alt="">
+            {% endfor %}
+            {% for video in trick.videos %}
+                <iframe
+                        width="560"
+                        height="196"
+                        src="{{ video.link }}"
+                        frameborder="0"
+                        allowfullscreen
+                >
+                </iframe>
+            {% endfor %}
+        </section>
+        <div>
+            <h5 class="card-title">{{ trick.name }}</h5>
+            <p class="card-text">{{ trick.description }}</p>
+            <p class="mb-4">
+                {% set user = trick.user %}
+                {{ user.id | avatar }} Par {{ user.pseudo }}
+                {% if not trick.modifyAt %}
+                    le {{ trick.createdAt | date('d/m/Y') }} à {{ trick.createdAt | date('H:i') }}
+                {% else %}
+                    édité le {{ trick.modifyAt | date('d/m/Y') }} à {{ trick.modifyAt | date('H:i') }}
+                {% endif %}
+                <span class="badge rounded-pill bg-primary float-end">{{ trick.label }}</span>
+            </p>
         </div>
         {% include 'trick/_comments.html.twig' %}
 
@@ -67,6 +72,7 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ encore_entry_script_tags('slider') }}
     {{ encore_entry_script_tags('toast') }}
     {{ encore_entry_script_tags('ajaxPagination') }}
 {% endblock %}

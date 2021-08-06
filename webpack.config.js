@@ -28,6 +28,7 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('trick', './assets/js/trick.js')
     .addEntry('toast', './assets/js/toast.js')
+    .addEntry('slider', './assets/js/slider.js')
     .addEntry('ajaxPictures', './assets/js/ajaxPictures.js')
     .addEntry('ajaxPagination', './assets/js/ajaxPagination.js')
 
@@ -78,7 +79,7 @@ Encore
     //.enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
 ;
 
 module.exports = Encore.getWebpackConfig();
