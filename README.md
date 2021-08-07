@@ -2,6 +2,68 @@
 [![SymfonyInsight](https://insight.symfony.com/projects/31bb2792-8590-42a0-9fd0-82a045a6219e/mini.svg)](https://insight.symfony.com/projects/31bb2792-8590-42a0-9fd0-82a045a6219e)
 
 Projet réalisé dans le cadre du parcours développeur d'applications PHP / SYMFONY effectué chez [Openclassrooms](https://openclassrooms.com/).
+
+## Installation du projet
+
+En fonction de votre système d'exploitation plusieurs serveurs peuvent être installés :
+
+    - Windows : WAMP (http://www.wampserver.com/)
+    - MAC : MAMP (https://www.mamp.info/en/mamp/)
+    - Linux : LAMP (https://doc.ubuntu-fr.org/lamp)
+    - XAMP (https://www.apachefriends.org/fr/index.html)
+
+## Clonage du projet
+
+Installation de GIT :
+
+    - GIT (https://git-scm.com/downloads) 
+
+Télécharger Symfony CLI
+
+    - https://symfony.com/download
+
+Une fois GIT installé, il faudra vous placer dans le répertoire de votre choix puis exécuté la commande suivante :
+
+    - git clone https://github.com/AlexandreCavanna/OC-Projet-6_SnowTricks
+
+Le projet sera automatiquement copié dans le répertoire ciblé.
+
+## Configuration des variables d'environnement
+
+Configurez les variables d'environnement comme la connexion à la base de données dans le fichier env.local qui sera créé à la racine du projet en copiant le fichier .env.
+Vous pourrez ensuite renseigner les identifiants de votre base de données en suivant le modèle ci-dessous.
+
+    - DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7
+
+## Création de la base de données
+
+Créez la base de données de l'application en tapant la commande ci-dessous :
+
+    - symfony console doctrine:database:create
+
+Puis lancer la migration pour créer les tables dans la base de données :
+
+    - symfony console doctrine:migrations:migrate    
+
+## Gestion des assets
+
+Vous pouvez générer à l'aide de Webpack vos assets Javascript et CSS avec NPM en tapant la commande ci-dessous :
+
+    - yarn run dev (en dev)
+    - yarn run build (en prod)
+
+## Lancement du serveur
+
+Vous pouvez lancer le serveur via la commande suivante :
+
+    - symfony server:start
+
+## Générer des fausses données
+
+Vous pouvez générer des fausses données grâce la fixture présente dans le projet avec la commande suivante :
+
+    - symfony console doctrine:fixtures:load
+
 ## Contexte du projet
 
 Jimmy Sweat est un entrepreneur ambitieux passionné de snowboard. Son objectif est la création d'un site collaboratif pour faire connaitre ce sport auprès du grand public et aider à l'apprentissage des figures (tricks).
