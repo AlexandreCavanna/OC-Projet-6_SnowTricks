@@ -7,6 +7,7 @@ use App\Entity\Comment;
 use App\Entity\Trick;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormInterface;
 
 class CommentManager
 {
@@ -20,7 +21,7 @@ class CommentManager
         $this->entityManager = $entityManager;
     }
 
-    public function create(Trick $trick, User $user, $form)
+    public function create(Trick $trick, User $user, FormInterface $form)
     {
         $comment = new Comment();
         $comment->setContent($form->get('content')->getData());

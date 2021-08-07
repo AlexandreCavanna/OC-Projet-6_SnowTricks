@@ -3,7 +3,6 @@
 
 namespace App\EntityListener;
 
-
 use App\Entity\User;
 use Doctrine\ORM\Mapping\PrePersist;
 
