@@ -105,7 +105,7 @@ class AccountController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès, vous pouvez maintenant vous connecter avec vos nouveaux identifiants !');
 
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('trick_index');
         }
 
         return $this->render('security/reset-password.html.twig', [

@@ -26,6 +26,7 @@ class TrickListener
     public function prePersistHandler(Trick $trick)
     {
         $trick->setSlug($this->slugger->slugify($trick->getName()));
+        $trick->setCreatedAt(new \DateTimeImmutable());
     }
 
     /** @ORM\PreUpdate() */

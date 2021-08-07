@@ -66,6 +66,9 @@ class CommentController extends AbstractController
             'Le commentaire a été <strong>supprimé</strong> avec succès !'
         );
 
-        return $this->redirectToRoute('trick_index');
+        return $this->redirectToRoute('trick_show', [
+            'id' => $comment->getTrick()->getId(),
+            'slug' => $comment->getTrick()->getSlug()
+        ]);
     }
 }

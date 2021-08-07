@@ -27,7 +27,7 @@ class RegistrationFormType extends AbstractType
                     'placeholder' => 'Entrer votre adresse email'
                 ],
             ])
-            ->add('username', TextType::class, [
+            ->add('pseudo', TextType::class, [
                 'label' => 'Nom utilisateur',
                 'required' => false,
                 'attr' => [
@@ -44,7 +44,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('plainPassword', RepeatedType::class, [
+            ->add('password', RepeatedType::class, [
                 'first_options'  => [
                     'label' => 'Mot de passe',
                     'attr' => [
