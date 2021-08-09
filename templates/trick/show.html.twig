@@ -4,11 +4,12 @@
 
 {% block body %}
     <div class="container mt-4">
-        <div class="position-relative text-center">
+        <div class="position-relative text-center mb-4">
             <img src="{{ 'trick-placeholder' in trick.coverImage ? asset('uploads/placeholder/') ~ trick.coverImage : asset('uploads/coverImages/') ~ trick.coverImage }}"
                  class="card-img-top" alt="...">
             <div class="h1 text-secondary position-absolute top-50 start-50 translate-middle-x">{{ trick.name }}</div>
         </div>
+
         <div class="d-flex justify-content-center mt-2 mb-2">
             <button id="display-media" class="btn btn-primary btn-display">
                 Voir les médias
@@ -30,7 +31,7 @@
                 </iframe>
             {% endfor %}
         </section>
-        <div>
+        <div class="mt-4">
             <h5 class="card-title">{{ trick.name }}</h5>
             <p class="card-text">{{ trick.description }}</p>
             <p class="mb-4">
