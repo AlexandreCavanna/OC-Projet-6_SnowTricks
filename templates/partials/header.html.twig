@@ -14,6 +14,9 @@
                 </li>
                 {% if app.user %}
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ path('trick_new') }}"><i class="bi bi-plus-square"></i> Créer un Trick</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
                 </li>
                 {% endif %}
