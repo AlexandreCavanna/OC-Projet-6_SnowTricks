@@ -6,12 +6,14 @@ use App\Repository\TrickRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
  * @ORM\EntityListeners({"App\EntityListener\TrickListener"})
+ * @UniqueEntity("name", message="Ce nom pour le trick est déjà utilisé.")
  */
 class Trick
 {
